@@ -1,6 +1,6 @@
-# Credit Card Fraud Detection System 🛡️
+# Credit Card Fraud Detection System
 
-## 📌 Project Overview
+##  Project Overview
 This project implements an end-to-end Machine Learning pipeline to detect fraudulent credit card transactions. 
 
 The dataset contains transactions made by credit cards in September 2013 by European cardholders. It presents a significant class imbalance challenge, where frauds account for only **0.172%** of all transactions.
@@ -14,7 +14,7 @@ The dataset contains transactions made by credit cards in September 2013 by Euro
 
 ---
 
-## 📂 Project Structure
+##  Project Structure
 The project is organized efficiently for reproducibility and scalability:
 
 ```
@@ -28,23 +28,23 @@ credit-card-fraud-ml/
 │   │   └── y_test.csv        # Unseen Test Target
 │
 ├── src/
-│   ├── feature_selection.py      # 1️⃣ Data Pipeline: Loading, Engineering, SMOTE, Saving
-│   ├── train_random_forest.py    # 2️⃣ Model Training: Random Forest
-│   ├── train_xgboost.py          # 2️⃣ Model Training: XGBoost
-│   ├── train_ensemble.py         # 2️⃣ Model Training: Voting Ensemble
-│   ├── test_pipeline.py          # 3️⃣ Inference: Loads models & predicts on test set
-│   └── generate_visualizations.py# 4️⃣ Analysis: Generates Confusion Matrices & PR Curves
+│   ├── feature_selection.py      # 1️ Data Pipeline: Loading, Engineering, SMOTE, Saving
+│   ├── train_random_forest.py    # 2️ Model Training: Random Forest
+│   ├── train_xgboost.py          # 3 Model Training: XGBoost
+│   ├── train_ensemble.py         # 4 Model Training: Voting Ensemble
+│   ├── test_pipeline.py          # 5 Inference: Loads models & predicts on test set
+│   └── generate_visualizations.py# 6 Analysis: Generates Confusion Matrices & PR Curves
 │
-├── models/                   # 💾 Saved Models (.pkl files)
-├── metrics/                  # 📊 Text reports containing F1, Precision, Recall scores
-├── plots/                    # 📈 Generated Charts (CM, ROC, PR Curves)
-├── requirements.txt          # 📦 Python Dependencies
-└── README.md                 # 📖 Project Documentation
+├── models/                   #  Saved Models (.pkl files)
+├── metrics/                  #  Text reports containing F1, Precision, Recall scores
+├── plots/                    #  Generated Charts (CM, ROC, PR Curves)
+├── requirements.txt          #  Python Dependencies
+└── README.md                 #  Project Documentation
 ```
 
 ---
 
-## �️ Methodology & Technical Details
+##  Methodology & Technical Details
 
 ### 1. Feature Engineering
 Since the original dataset consists mostly of PCA-transformed features (`V1`...`V28`), we focused detailed engineering on the non-transformed `Amount` and `Time` columns:
@@ -66,7 +66,7 @@ We trained a preliminary Random Forest to rank feature importance. To improve mo
 
 ---
 
-## 🚀 Installation & Usage
+##  Installation & Usage
 
 ### Prerequisites
 *   Python 3.8+
@@ -113,7 +113,7 @@ python src/test_pipeline.py
 
 ---
 
-## 📊 Model Performance
+##  Model Performance
 
 We optimized for **Recall** (catching as many frauds as possible) while maintaining decent **Precision** (minimizing false alarms).
 
@@ -130,7 +130,7 @@ We optimized for **Recall** (catching as many frauds as possible) while maintain
 
 ---
 
-## 📦 Dependencies
+##  Dependencies
 *   `pandas`, `numpy`: Data Manipulation
 *   `scikit-learn`: Modeling & Metrics
 *   `xgboost`: Gradient Boosting Model
