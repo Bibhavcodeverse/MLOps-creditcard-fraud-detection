@@ -1,70 +1,71 @@
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
+import joblib
 from sklearn.preprocessing import StandardScaler
+import os
 
-# 1. Load Dataset
-print("Loading dataset...")
-try:
-    df = pd.read_csv('creditcard.csv')
-    print("Dataset loaded successfully.")
-except FileNotFoundError:
-    print("Error: creditcard.csv not found.")
-    exit()
+class FeatureEngineering:
+    def __init__(self):
+        self.scaler = StandardScaler()
+        self.high_amount_threshold = None
+        self.required_columns = ['Time', 'Amount']
 
-# 2. Minimal Feature Engineering
-print("\nPerforming Feature Engineering...")
+    def fit(self, df):
+        """Learns scaling parameters and thresholds from training data."""
+        # Learn high amount threshold (95th percentile)
+        self.high_amount_threshold = df['Amount'].quantile(0.95)
+        
+        # Fit scaler on Amount
+        self.scaler.fit(df[['Amount']])
+        print("Feature Engineering: Fitted scaler and learned threshold.")
+        return self
 
-# log_amount: Log transformation to handle skewed Amount distribution
-# Adding 1e-5 to avoid log(0) if Amount is 0 (though normally transactions > 0 or 0 for verification)
-df['log_amount'] = np.log1p(df['Amount'])
+    def transform(self, df):
+        """Applies feature transformations to the data."""
+        df = df.copy()
+        
+        # 1. log_amount
+        df['log_amount'] = np.log1p(df['Amount'])
+        
+        # 2. amount_zscore
+        if hasattr(self.scaler, 'mean_'): # Check if fitted
+            df['amount_zscore'] = self.scaler.transform(df[['Amount']])
+        else:
+            raise ValueError("FeatureEngineering instance is not fitted yet.")
 
-# amount_zscore: Standardizing Amount
-scaler = StandardScaler()
-df['amount_zscore'] = scaler.fit_transform(df[['Amount']])
+        # 3. is_high_amount
+        if self.high_amount_threshold is not None:
+             df['is_high_amount'] = (df['Amount'] > self.high_amount_threshold).astype(int)
+        else:
+             raise ValueError("FeatureEngineering instance is not fitted yet.")
 
-# is_high_amount: Binary flag for high transactions (> 95th percentile)
-threshold_95 = df['Amount'].quantile(0.95)
-df['is_high_amount'] = (df['Amount'] > threshold_95).astype(int)
-print(f"High amount threshold (95th percentile): {threshold_95:.2f}")
+        # 4. amount_per_time
+        df['amount_per_time'] = df['Amount'] / (df['Time'] + 1)
+        
+        return df
 
-# amount_per_time: Interaction feature (Amount / Time) which might capture velocity/rate anomalies
-# Adding 1 to Time to avoid division by zero
-df['amount_per_time'] = df['Amount'] / (df['Time'] + 1)
+    def save(self, filepath="models/feature_engineer.pkl"):
+        """Saves the fitted object."""
+        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        joblib.dump(self, filepath)
+        print(f"Feature Engineering artifacts saved to {filepath}")
 
-print("New features created: log_amount, amount_zscore, is_high_amount, amount_per_time")
+    @staticmethod
+    def load(filepath="models/feature_engineer.pkl"):
+        """Loads a fitted object."""
+        if not os.path.exists(filepath):
+            raise FileNotFoundError(f"Feature Engineering artifacts not found at {filepath}")
+        return joblib.load(filepath)
 
-# 3. Prepare for Feature Selection
-X = df.drop("Class", axis=1)
-y = df["Class"]
-
-# Split data (Stratified)
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, stratify=y, random_state=42
-)
-
-# 4. Feature Selection (Random Forest)
-print("\nTraining Random Forest for Feature Importance (this may take a moment)...")
-# Using a limited depth and estimators for speed in this assessment script, 
-# but sufficient for importance ranking
-rf = RandomForestClassifier(n_estimators=50, max_depth=10, random_state=42, n_jobs=-1)
-rf.fit(X_train, y_train)
-
-# 5. Extract and Print Feature Importances
-importances = pd.DataFrame({
-    'Feature': X.columns,
-    'Importance': rf.feature_importances_
-}).sort_values(by='Importance', ascending=False)
-
-print("\n--- Feature Importance Ranking ---")
-print(importances.head(20))  # Top 20 features
-
-# Highlight new features
-new_features = ['log_amount', 'amount_zscore', 'is_high_amount', 'amount_per_time']
-print("\n--- New Feature Performance ---")
-print(importances[importances['Feature'].isin(new_features)])
-
-# Optional: Suggest features to keep (e.g., top 15 + new features if relevant)
-top_features = importances.head(15)['Feature'].tolist()
-print("\nSuggested Top 15 Features:", top_features)
+if __name__ == "__main__":
+    # Test script compatibility or for quick validation
+    try:
+        df = pd.read_csv('data/processed/train.csv')
+        fe = FeatureEngineering()
+        fe.fit(df)
+        df_transformed = fe.transform(df)
+        print("Transformation successful.")
+        print(df_transformed[['log_amount', 'amount_zscore', 'is_high_amount', 'amount_per_time']].head())
+        fe.save()
+    except Exception as e:
+        print(f"Feature Engineering Test Failed: {e}")
