@@ -22,12 +22,12 @@ Key Features of this Solution:
 graph TD
     subgraph "Data Pre-Processing"
         DI[Data Ingestion] --> VAL[Validation]
-        VAL --> NORM[Normalization/Scaling]
-        NORM --> BAL[Balancing (SMOTE)]
+        VAL --> NORM["Normalization/Scaling"]
+        NORM --> BAL["Balancing (SMOTE)"]
     end
 
     subgraph "Feature Engineering"
-        BAL --> FG[Feature Generation (Log/Ratios)]
+        BAL --> FG["Feature Generation (Log/Ratios)"]
         FG --> FS[Feature Selection]
     end
 
@@ -40,8 +40,8 @@ graph TD
     end
 
     subgraph "Model Updating"
-        EVAL --> DEP[Deployment/Inference]
-        DEP --> MON[Monitoring & Drift Detection]
+        EVAL --> DEP["Deployment/Inference"]
+        DEP --> MON["Monitoring & Drift Detection"]
         MON -->|Drift Detected| RET[Trigger Retraining]
     end
 ```
