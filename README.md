@@ -77,8 +77,29 @@ We trained a preliminary Random Forest to rank feature importance. To improve mo
 | F1-score                    | **0.84**           | 0.82             | Balanced model maintains competitive F1 while improving recall |
 | ROC-AUC                     | 0.95               | **0.98**         | Better class separability and stronger generalization |
 | False Negatives (FN)        | 25                 | **14**           | Fewer missed positive cases, critical for risk-sensitive applications |
-| False Positives (FP)        | **3**              | 22               | Increase in false positives is a trade-off for higher recall and safety |
+| False Positives (FP)        | **3**              | 22               | Increase in false positives is a trade-off for higher recall and safety 
 
+##  Unbalanced vs Balanced Dataset – Pros & Cons
+
+| Dataset Type | Category | Description |
+|-------------|----------|-------------|
+| **Unbalanced Dataset** |  Pros | Very high precision (0.96), meaning predictions for the minority class are highly accurate |
+| | | Low false positives (3), suitable when false alarms are costly |
+| | | Good ROC-AUC (0.95), indicating reasonable class separability |
+| | | Slightly higher F1-score (0.84) compared to the balanced model |
+| |  Cons | Low recall (0.74), causing many minority class instances to be missed |
+| | | High false negatives (25), risky for critical applications such as fraud or disease detection |
+| | | Biased toward the majority class due to data imbalance |
+| | | Accuracy appears misleadingly high because of class imbalance |
+| |  Risk | Model appears strong but silently ignores a significant portion of minority cases |
+| **Balanced Dataset** |  Pros | High recall (0.86), capturing more minority class instances |
+| | | Reduced false negatives (25 → 14), improving reliability for critical systems |
+| | | Excellent ROC-AUC (0.98), reflecting strong ranking and probability estimation |
+| | | More fair, robust, and generalized model behavior |
+| |  Cons | Lower precision (0.79), resulting in more false alarms |
+| | | Higher false positives (22), increasing verification or review cost |
+| | | Slightly lower F1-score (0.82) |
+| |  Trade-off | Model prioritizes sensitivity and safety over strict precision |
 
 ---
 
