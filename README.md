@@ -9,6 +9,8 @@ The dataset contains transactions made by credit cards in September 2013 by Euro
 *   **Robust Data Handling:** Implements **SMOTE** (Synthetic Minority Over-sampling Technique) to handle extreme class imbalance.
 *   **Targeted Feature Engineering:** Adds domain-specific features to capture spending patterns and anomalies.
 *   **Strict Feature Selection:** Uses Random Forest importance to select the top ~24 most predictive features, reducing noise.
+*   **Random Forest Strategy:** Trains a parallelized ensemble of 100 deep trees (n_jobs=-1, max_depth=20) to capture complex non-linear fraud patterns while maintaining generalization.
+*   **XGBoost Strategy:**  Leverages gradient boosting with optimized step size (learning_rate=0.1) and depth (max_depth=6) to sequentially correct errors and maximize predictive accuracy.
 *   **Ensemble Learning:** Combines **Random Forest** and **XGBoost** via a Soft Voting Classifier to maximize detection capability.
 *   **Production-Ready Structure:** Organized code into modular scripts for data processing, training, evaluation, and inference.
 *   **Ensemble Learning with tuning hyperparameter:** experimentation lab designed to automatically find the best hyperparameters for Random Forest and XGBoost models using the dataset.
