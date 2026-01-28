@@ -138,7 +138,7 @@ We optimized for **Recall** (catching as many frauds as possible) while maintain
 **XGBoost:** <img width="350" height="300" alt="cm_xgboost" src="https://github.com/user-attachments/assets/a85b4a09-3dec-4ce1-9812-f6518861352b" />
 
 ## PR Curve Comparison
-<img width="800" height="350" alt="pr_curve_comparison" src="https://github.com/user-attachments/assets/a74eed6e-7237-4f73-b663-973df19c8b8d" />
+<img width="600" height="350" alt="pr_curve_comparison" src="https://github.com/user-attachments/assets/a74eed6e-7237-4f73-b663-973df19c8b8d" />
 
 
 
