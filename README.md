@@ -68,6 +68,18 @@ We trained a preliminary Random Forest to rank feature importance. To improve mo
 *   **Strategy:** We applied **SMOTE** (Synthetic Minority Over-sampling Technique) to create synthetic examples of fraud.
 *   **Crucial Detail:** SMOTE was applied **ONLY to the Training Set**. The Test Set remains practically imbalanced to ensure our evaluation metrics reflect real-world performance.
 
+*   ### Model Comparison (Minority Class – 1)
+
+| Metric (Class 1 – Minority) | Unbalanced Dataset | Balanced Dataset | Why Balanced Dataset Is More Suitable |
+| --------------------------- | ------------------ | ---------------- | ------------------------------------- |
+| Precision                   | **0.96**           | 0.79             | Slightly lower precision is acceptable to improve overall detection of minority cases |
+| Recall                      | 0.74               | **0.86**         | Higher recall ensures more true minority cases are correctly identified |
+| F1-score                    | **0.84**           | 0.82             | Balanced model maintains competitive F1 while improving recall |
+| ROC-AUC                     | 0.95               | **0.98**         | Better class separability and stronger generalization |
+| False Negatives (FN)        | 25                 | **14**           | Fewer missed positive cases, critical for risk-sensitive applications |
+| False Positives (FP)        | **3**              | 22               | Increase in false positives is a trade-off for higher recall and safety |
+
+
 ---
 
 ##  Installation & Usage
