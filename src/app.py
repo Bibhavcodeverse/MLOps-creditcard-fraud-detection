@@ -160,24 +160,35 @@ elif menu == "Real-time Prediction":
     st.title("🔍 Real-time Inference Playground")
     st.write("Enter transaction features to check for fraud probability.")
     
-    # Let's load a sample from the test set to populate the form
+    # Define features even if sample data is missing
+    features_list = ['Time', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9', 
+                     'V10', 'V11', 'V12', 'V13', 'V14', 'V15', 'V16', 'V17', 'V18', 
+                     'V19', 'V20', 'V21', 'V22', 'V23', 'V24', 'V25', 'V26', 'V27', 
+                     'V28', 'Amount']
+    
+    # Try to load a sample if file exists, else use defaults
+    default_vals = {feat: 0.0 for feat in features_list}
     if os.path.exists("data/processed/test.csv"):
-        test_df = pd.read_csv("data/processed/test.csv")
-        sample = test_df.iloc[0].drop("Class")
+        try:
+            test_df = pd.read_csv("data/processed/test.csv")
+            sample = test_df.iloc[0].drop("Class")
+            for feat in features_list:
+                 if feat in sample: default_vals[feat] = float(sample[feat])
+            st.info("📊 Loaded initial values from test dataset.")
+        except:
+            pass
+    
+    with st.form("inference_form"):
+        col1, col2 = st.columns(2)
+        inputs = {}
         
-        with st.form("inference_form"):
-            col1, col2 = st.columns(2)
-            inputs = {}
-            
-            # Divide features into two columns
-            features_list = list(sample.index)
-            for i, feat in enumerate(features_list):
-                with col1 if i < len(features_list)/2 else col2:
-                    inputs[feat] = st.number_input(feat, value=float(sample[feat]), format="%.5f")
-            
-            submitted = st.form_submit_button("Detect Fraud")
-            
-            if submitted:
+        for i, feat in enumerate(features_list):
+            with col1 if i < len(features_list)/2 else col2:
+                inputs[feat] = st.number_input(feat, value=default_vals[feat], format="%.5f")
+        
+        submitted = st.form_submit_button("Detect Fraud")
+        
+        if submitted:
                 # Try API first, fallback to Local
                 prediction_success = False
                 try:
