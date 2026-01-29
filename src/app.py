@@ -203,16 +203,27 @@ elif menu == "Real-time Prediction":
                     # Local Fallback
                     if LOCAL_MODEL and LOCAL_FE:
                         df_input = pd.DataFrame([inputs])
-                        # Force column order
-                        expected_cols = ['Time', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9', 
-                                         'V10', 'V11', 'V12', 'V13', 'V14', 'V15', 'V16', 'V17', 'V18', 
-                                         'V19', 'V20', 'V21', 'V22', 'V23', 'V24', 'V25', 'V26', 'V27', 
-                                         'V28', 'Amount']
-                        df_input = df_input[expected_cols]
                         
+                        # Ensure columns are in the right order for the Feature Engineer
+                        expected_base_cols = ['Time', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9', 
+                                              'V10', 'V11', 'V12', 'V13', 'V14', 'V15', 'V16', 'V17', 'V18', 
+                                              'V19', 'V20', 'V21', 'V22', 'V23', 'V24', 'V25', 'V26', 'V27', 
+                                              'V28', 'Amount']
+                        df_input = df_input[expected_base_cols]
+                        
+                        # Apply transformations
                         df_transformed = LOCAL_FE.transform(df_input)
-                        prob = LOCAL_MODEL.predict_proba(df_transformed)[0][1]
-                        is_fraud = LOCAL_MODEL.predict(df_transformed)[0] == 1
+                        
+                        # Ensure columns match the model's training order exactly
+                        if hasattr(LOCAL_MODEL, 'feature_names_in_'):
+                            df_transformed = df_transformed[LOCAL_MODEL.feature_names_in_]
+                        
+                        # Use .values to bypass name-based validation errors on different environments
+                        probs = LOCAL_MODEL.predict_proba(df_transformed.values)
+                        prob = probs[0][1]
+                        
+                        # Prediction successfully calculated
+                        is_fraud = LOCAL_MODEL.predict(df_transformed.values)[0] == 1
                         prediction_success = True
                         st.info("💡 Prediction served via local model fallback.")
                 
