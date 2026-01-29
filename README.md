@@ -2,7 +2,8 @@
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://bibhavcodeverse-mlops-creditcard-fraud-detection-srcapp-a517fp.streamlit.app/#credit-card-fraud-detection-ml-ops)
 
-**🚀 Live Dashboard:** [View MLOps Dashboard](https://bibhavcodeverse-mlops-creditcard-fraud-detection-srcapp-a517fp.streamlit.app/#credit-card-fraud-detection-ml-ops)
+** Live Dashboard:** [View MLOps Dashboard](https://bibhavcodeverse-mlops-creditcard-fraud-detection-srcapp-a517fp.streamlit.app/#credit-card-fraud-detection-ml-ops)
+
 
 ---
 
