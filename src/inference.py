@@ -62,11 +62,19 @@ def predict(transactions: List[Transaction]):
     
     try:
         # Convert to DataFrame
-        # dict() extraction for Pydantic models with extra fields
         data = [t.dict() for t in transactions]
         df = pd.DataFrame(data)
         
-        # Ensure correct column order/presence if needed, but model handles it mostly
+        # Explicitly ensure correct column order for Feature Engineering
+        # This matches the training set columns
+        expected_cols = ['Time', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9', 
+                         'V10', 'V11', 'V12', 'V13', 'V14', 'V15', 'V16', 'V17', 'V18', 
+                         'V19', 'V20', 'V21', 'V22', 'V23', 'V24', 'V25', 'V26', 'V27', 
+                         'V28', 'Amount']
+        
+        # Filter and reorder columns
+        df = df[expected_cols]
+        
         # Feature Engineering Transform
         df_transformed = fe.transform(df)
         

@@ -6,8 +6,8 @@ __pycache__/
 data/raw/
 data/processed/
 
-# Models (Can be re-trained)
-models/
+# Models (Keep for deployment)
+# models/
 
 # VS Code
 .vscode/
