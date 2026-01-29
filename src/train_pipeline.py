@@ -27,10 +27,10 @@ def load_data():
     return train_df, test_df
 
 def train():
-    # 1. Load Data
+    #  Load Data
     train_df, test_df = load_data()
     
-    # 2. Feature Engineering
+    # Feature Engineering
     print("Applying Feature Engineering...")
     fe = FeatureEngineering()
     fe.fit(train_df)
@@ -45,12 +45,12 @@ def train():
     X_test = test_df.drop("Class", axis=1)
     y_test = test_df["Class"]
     
-    # 3. SMOTE Balancing
+    #  SMOTE Balancing
     print("Applying SMOTE...")
     smote = SMOTE(random_state=42)
     X_train_resampled, y_train_resampled = smote.fit_resample(X_train, y_train)
     
-    # 4. Model Tuning & Training
+    #  Model Tuning & Training
     print("Starting Model Training...")
     
     # Random Forest
@@ -88,7 +88,7 @@ def train():
     )
     voting_clf.fit(X_train_resampled, y_train_resampled)
     
-    # 5. Evaluation
+    #  Evaluation
     print("Evaluating Model...")
     y_pred = voting_clf.predict(X_test)
     y_prob = voting_clf.predict_proba(X_test)[:, 1]
@@ -99,7 +99,7 @@ def train():
     
     print("ROC-AUC:", auc)
     
-    # 6. Save Artifacts
+    #  Save Artifacts
     joblib.dump(voting_clf, "models/model.pkl")
     
     metrics = {
