@@ -1,5 +1,11 @@
 # Credit Card Fraud Detection System (MLOps Enhanced)
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://bibhavcodeverse-mlops-creditcard-fraud-detection-srcapp-a517fp.streamlit.app/#credit-card-fraud-detection-ml-ops)
+
+**🚀 Live Dashboard:** [View MLOps Dashboard](https://bibhavcodeverse-mlops-creditcard-fraud-detection-srcapp-a517fp.streamlit.app/#credit-card-fraud-detection-ml-ops)
+
+---
+
 ## Project Overview
 This project implements an end-to-end Machine Learning pipeline to detect fraudulent credit card transactions. It addresses the significant class imbalance challenge (frauds account for only **0.172%**) using advanced techniques like SMOTE and Ensemble Learning.
 
