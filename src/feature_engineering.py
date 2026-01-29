@@ -12,10 +12,10 @@ class FeatureEngineering:
 
     def fit(self, df):
         """Learns scaling parameters and thresholds from training data."""
-        # Learn high amount threshold (95th percentile)
+        
         self.high_amount_threshold = df['Amount'].quantile(0.95)
         
-        # Fit scaler on Amount
+        
         self.scaler.fit(df[['Amount']])
         print("Feature Engineering: Fitted scaler and learned threshold.")
         return self
