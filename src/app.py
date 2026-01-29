@@ -8,6 +8,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
 import joblib
+import sys
 
 # Set Page Config
 st.set_page_config(
@@ -47,7 +48,7 @@ st.markdown("""
 # Helper for Running Scripts
 def run_pipeline_step(script_name):
     with st.spinner(f"Running {script_name}..."):
-        result = subprocess.run(["python", script_name], capture_output=True, text=True)
+        result = subprocess.run([sys.executable, script_name], capture_output=True, text=True)
         if result.returncode == 0:
             st.success(f"{script_name} completed successfully!")
             return result.stdout
