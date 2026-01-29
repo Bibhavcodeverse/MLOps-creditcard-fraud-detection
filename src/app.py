@@ -7,6 +7,7 @@ import subprocess
 import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
+import joblib
 
 # Set Page Config
 st.set_page_config(
@@ -57,6 +58,19 @@ def run_pipeline_step(script_name):
 
 # API Configuration
 API_URL = "http://localhost:8000/predict"
+
+# Direct Model Load for Headless Deployment
+@st.cache_resource
+def load_local_model():
+    try:
+        model = joblib.load("models/ensemble_model.pkl")
+        fe = joblib.load("models/feature_engineer.pkl")
+        return model, fe
+    except Exception as e:
+        st.error(f"Failed to load local model: {e}")
+        return None, None
+
+LOCAL_MODEL, LOCAL_FE = load_local_model()
 
 # --- Sidebar ---
 st.sidebar.title("💳 MLOps Hub")
@@ -164,39 +178,55 @@ elif menu == "Real-time Prediction":
             submitted = st.form_submit_button("Detect Fraud")
             
             if submitted:
+                # Try API first, fallback to Local
+                prediction_success = False
                 try:
                     # Match Fast API expectations
-                    response = requests.post(API_URL, json=[inputs])
+                    response = requests.post(API_URL, json=[inputs], timeout=2)
                     if response.status_code == 200:
                         pred_data = response.json()[0]
-                        
                         prob = pred_data['probability']
                         is_fraud = pred_data['prediction'] == 1
+                        prediction_success = True
+                except:
+                    # Local Fallback
+                    if LOCAL_MODEL and LOCAL_FE:
+                        df_input = pd.DataFrame([inputs])
+                        # Force column order
+                        expected_cols = ['Time', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9', 
+                                         'V10', 'V11', 'V12', 'V13', 'V14', 'V15', 'V16', 'V17', 'V18', 
+                                         'V19', 'V20', 'V21', 'V22', 'V23', 'V24', 'V25', 'V26', 'V27', 
+                                         'V28', 'Amount']
+                        df_input = df_input[expected_cols]
                         
-                        if is_fraud:
-                            st.error(f"🚨 FRAUD DETECTED! (Probability: {prob*100:.2f}%)")
-                        else:
-                            st.success(f"✅ Transaction Legitimate (Probability: {prob*100:.2f}%)")
-                            
-                        # Probability gauge
-                        fig = go.Figure(go.Indicator(
-                            mode = "gauge+number",
-                            value = prob * 100,
-                            title = {'text': "Fraud Risk (%)"},
-                            gauge = {'axis': {'range': [None, 100]},
-                                     'bar': {'color': "#ff4b4b" if is_fraud else "#2eeb71"},
-                                     'steps': [
-                                         {'range': [0, 30], 'color': "lightgreen"},
-                                         {'range': [30, 70], 'color': "yellow"},
-                                         {'range': [70, 100], 'color': "red"}]}
-                        ))
-                        fig.update_layout(template="plotly_dark", height=300)
-                        st.plotly_chart(fig, use_container_width=True)
+                        df_transformed = LOCAL_FE.transform(df_input)
+                        prob = LOCAL_MODEL.predict_proba(df_transformed)[0][1]
+                        is_fraud = LOCAL_MODEL.predict(df_transformed)[0] == 1
+                        prediction_success = True
+                        st.info("💡 Prediction served via local model fallback.")
+                
+                if prediction_success:
+                    if is_fraud:
+                        st.error(f"🚨 FRAUD DETECTED! (Probability: {prob*100:.2f}%)")
                     else:
-                        st.error(f"API Error: {response.text}")
-                except Exception as e:
-                    st.error(f"Connection Error: {e}")
-                    st.info("Make sure the inference API is running on port 8000.")
+                        st.success(f"✅ Transaction Legitimate (Probability: {prob*100:.2f}%)")
+                        
+                    # Probability gauge
+                    fig = go.Figure(go.Indicator(
+                        mode = "gauge+number",
+                        value = prob * 100,
+                        title = {'text': "Fraud Risk (%)"},
+                        gauge = {'axis': {'range': [None, 100]},
+                                 'bar': {'color': "#ff4b4b" if is_fraud else "#2eeb71"},
+                                 'steps': [
+                                     {'range': [0, 30], 'color': "lightgreen"},
+                                     {'range': [30, 70], 'color': "yellow"},
+                                     {'range': [70, 100], 'color': "red"}]}
+                    ))
+                    fig.update_layout(template="plotly_dark", height=300)
+                    st.plotly_chart(fig, use_container_width=True)
+                else:
+                    st.error("Prediction failed. Neither live API nor local model are available.")
 
 # --- Drift Monitoring ---
 elif menu == "Drift Monitoring":
